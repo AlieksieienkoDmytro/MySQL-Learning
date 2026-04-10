@@ -1,0 +1,11 @@
+In diesem Abschnitt sind die vier erstellten Tabellen mit den entsprechenden Datensätzen dargestellt.
+1.1 Tabelle: Referenten
+Diese Tabelle enthält die Informationen über die Vortragenden (Name, E-Mail und Organisation).
+1.2 Tabelle: Teilnehmer
+In dieser Tabelle sind alle registrierten Konferenzteilnehmer gespeichert.
+1.3 Tabelle: Themen
+Diese Tabelle listet die verfügbaren Themen auf und verknüpft sie über die referent_id mit dem jeweiligen Dozenten.
+1.4 Tabelle: Teilnehmer nach Themen (Zuordnung)
+Diese Verknüpfungstabelle verwaltet die Anmeldung der Teilnehmer zu den spezifischen Themen (n:m Beziehung).
+2. ER-Diagramm (Datenbankmodell)
+Das folgende Diagramm zeigt die logische Struktur der Datenbank sowie die Beziehungen (Foreign Keys) zwischen den Tabellen.
