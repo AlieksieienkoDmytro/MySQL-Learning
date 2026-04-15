@@ -22,6 +22,10 @@ VALUES ('1111', 'Applikationsentwicklung Fundamentals', 1),
        ('8888', 'Elektrotechnik II',3),
        ('9999', 'Robotik',4);
 
+INSERT INTO ausleihe (exemplar_id, von, bis, ISBN, titel, fachbuch_id)
+VALUES (101, '2026-04-01', '2026-04-15', '1111', 'Applikationsentwicklung Fundamentals', 1),
+       (102, '2026-04-05', '2026-04-19', '3333', 'IT Technik - Betriebstechnik Fundamentals', 3);
+
 INSERT INTO fachbereich_fachbuch (fachbereich_id, fachbuch_id)
 VALUES (1, 1),
        (1, 2),

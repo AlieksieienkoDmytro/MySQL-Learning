@@ -19,6 +19,18 @@ CREATE TABLE Fachbereich (
                              titel VARCHAR(100) NOT NULL
 );
 
+CREATE TABLE Ausleihe (
+                          ausleihe_id INT AUTO_INCREMENT,
+                          exemplar_id INT NOT NULL,
+                          von DATE NOT NULL,
+                          bis DATE,
+                          ISBN VARCHAR(20),
+                          titel VARCHAR(255),
+                          fachbuch_id INT,
+                          PRIMARY KEY (ausleihe_id, exemplar_id),
+                          FOREIGN KEY (fachbuch_id) REFERENCES Fachbuch(fachbuch_id)
+);
+
 CREATE TABLE Fachbereich_Fachbuch (
                                       fachbereich_id INT,
                                       fachbuch_id INT,
