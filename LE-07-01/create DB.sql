@@ -16,7 +16,6 @@ CREATE TABLE Fachbuch (
 
 CREATE TABLE Fachbereich (
                              fachbereich_id INT AUTO_INCREMENT PRIMARY KEY,
-                             ISBN VARCHAR(20) NOT NULL UNIQUE,
                              titel VARCHAR(100) NOT NULL
 );
 
