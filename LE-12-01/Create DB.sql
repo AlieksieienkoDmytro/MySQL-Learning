@@ -1,0 +1,109 @@
+CREATE DATABASE IF NOT EXISTS shop_db_dmitry;
+USE shop_db_dmitry;
+
+CREATE TABLE kunden (
+    kunden_id INT AUTO_INCREMENT  PRIMARY KEY,
+    vorname VARCHAR(50),
+    nachname VARCHAR(50),
+    straße VARCHAR(100),
+    hausnummer VARCHAR(10),
+    postleitzahl VARCHAR(10),
+    stadt VARCHAR(50),
+    telefonnummer VARCHAR(20),
+    email VARCHAR(100)
+);
+
+CREATE TABLE lieferanten (
+    lieferanten_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    straße VARCHAR(100),
+    hausnummer VARCHAR(10),
+    postleitzahl VARCHAR(10),
+    stadt VARCHAR(50),
+    telefonnummer VARCHAR(20),
+    email VARCHAR(100)
+);
+
+CREATE TABLE artikel (
+    artikel_id INT AUTO_INCREMENT PRIMARY KEY,
+    bezeichnung VARCHAR(100) NOT NULL,
+    beschreibung TEXT,
+    preis DECIMAL(10, 2),
+    lagerbestand INT
+);
+
+CREATE TABLE verkauf (
+    verkauf_id INT AUTO_INCREMENT PRIMARY KEY,
+    kunden_id INT,
+    lieferanten_id INT,
+    artikel_id INT,
+    menge INT,
+    datum DATE,
+    FOREIGN KEY (kunden_id) REFERENCES kunden(kunden_id),
+    FOREIGN KEY (lieferanten_id) REFERENCES lieferanten(lieferanten_id),
+    FOREIGN KEY (artikel_id) REFERENCES artikel(artikel_id)
+);
+
+-- Procedure to handle the sales process
+CREATE PROCEDURE verkauf_abwickeln (
+    IN p_kunden_id INT,
+    IN p_lieferanten_id INT,
+    IN p_artikel_id INT,
+    IN p_menge INT
+)
+BEGIN
+    -- Variable to store current stock level
+    DECLARE bestand INT;
+
+    -- Start the transaction to ensure atomicity
+    START TRANSACTION;
+
+    -- Retrieve the current stock for the specified item
+    SELECT lagerbestand INTO bestand
+    FROM artikel
+    WHERE artikel_id = p_artikel_id;
+
+    -- Validation logic: Check if enough stock is available
+    IF bestand < p_menge THEN
+        -- Rollback changes if stock is insufficient
+        ROLLBACK;
+        SELECT 'Nicht genügend Lagerbestand für diesen Artikel.' AS fehlermeldung;
+    ELSE
+        -- Update the stock level by subtracting the sold quantity
+        UPDATE artikel
+        SET lagerbestand = lagerbestand - p_menge
+        WHERE artikel_id = p_artikel_id;
+
+        -- Insert the sales record into the 'verkauf' table
+        INSERT INTO verkauf (kunden_id, lieferanten_id, artikel_id, menge, datum)
+        VALUES (p_kunden_id, p_lieferanten_id, p_artikel_id, p_menge, CURDATE());
+
+        -- Provide success notification to the user
+        SELECT 'Verkauf erfolgreich abgeschlossen.' AS erfolgsmeldung;
+
+        -- Commit all changes to the database
+        COMMIT;
+    END IF;
+END;
+
+INSERT INTO kunden (vorname, nachname, straße, hausnummer, postleitzahl, stadt, telefonnummer, email)
+VALUES ('Dmitry', 'Mage', 'Levelstrasse', '10', '10115', 'Berlin', '01761234567', 'dmitry.mage@mail.de'),
+       ('Hans', 'Müller', 'Reeperbahn', '22', '20359', 'Hamburg', '0409876543', 'h.mueller@web.de'),
+       ('Elena', 'Fischer', 'Maximilianstraße', '5', '80333', 'München', '08911223344', 'elena.f@gmx.de');
+
+INSERT INTO lieferanten (name, straße, hausnummer, postleitzahl, stadt, telefonnummer, email)
+VALUES ('Tabak Großhandel Nord', 'Industriestraße', '45', '28195', 'Bremen', '0421-5556677', 'info@tabak-nord.de'),
+       ('Zigarren Import GmbH', 'Königsallee', '12', '40212', 'Düsseldorf', '0211-8889900', 'service@zigarren-import.de');
+
+INSERT INTO artikel (bezeichnung, beschreibung, preis, lagerbestand)
+VALUES ('Cohiba Siglo II', 'Premium Zigarre aus Kuba', 24.50, 50),
+       ('Lucky Strike Red', 'Zigaretten 20er Packung', 8.20, 200),
+       ('Zippo Classic', 'Sturmfeuerzeug Chrom', 35.00, 15),
+       ('Pfeifentabak Vanille', 'Mild und aromatisch, 50g', 12.90, 30),
+       ('Drehtabak Javaanse', 'Halbschwarzer Tabak, 30g', 6.50, 100);
+
+INSERT INTO Verkauf (kunden_id, lieferanten_id, artikel_id, menge, datum)
+VALUES (1, 1, 1, 2, '2026-04-20'),
+       (1, 1, 3, 1, '2026-04-20'),
+       (2, 1, 2, 5, '2026-04-21'),
+       (3, 2, 4, 1, '2026-04-22');
