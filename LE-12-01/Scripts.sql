@@ -35,6 +35,7 @@ SET lagerbestand = lagerbestand + 50
 WHERE artikel_id = 2;
 
 -- 10. Delete a customer and all their related sales
+DELETE FROM kunden WHERE kunden_id = 3;
 DELETE FROM verkauf WHERE kunden_id = 3;
 DELETE FROM kunden WHERE kunden_id = 3;
 
@@ -80,14 +81,7 @@ GROUP BY kunden.kunden_id;
 SELECT * FROM view_customer_turnover;
 
 
-/* TRANSACTION 1 (Optimized via Stored Procedure):
-   I implemented this transaction through a Stored Procedure to ensure atomicity.
-   It simultaneously handles:
-   1. Checking stock levels (Validation)
-   2. Reducing stock in the 'artikel' table (UPDATE)
-   3. Logging the sale in the 'verkauf' table (INSERT)
-   If stock is insufficient, it triggers a ROLLBACK to maintain data integrity.
-*/
+-- TRANSACTION 1
 
 -- Case 1: Testing Transaction 1 (Successful sale)
 -- Dmitry buys 2 Cohiba cigars. Both tables will be updated.

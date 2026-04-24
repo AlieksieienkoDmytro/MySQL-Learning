@@ -44,6 +44,21 @@ CREATE TABLE verkauf (
     FOREIGN KEY (artikel_id) REFERENCES artikel(artikel_id)
 );
 
+-- Table for customer bank accounts
+CREATE TABLE kunden_konten (
+    konto_id INT PRIMARY KEY AUTO_INCREMENT,
+    kunden_id INT,
+    kontostand DECIMAL(10,2),
+    FOREIGN KEY (kunden_id) REFERENCES kunden(kunden_id)
+);
+
+-- Table for the shop's cash register (only one record needed)
+CREATE TABLE shop_kasse (
+    kasse_id INT PRIMARY KEY,
+    kontostand DECIMAL(15,2) DEFAULT 0.00
+);
+
+
 -- Procedure to handle the sales process
 CREATE PROCEDURE verkauf_abwickeln (
     IN p_kunden_id INT,
@@ -52,36 +67,48 @@ CREATE PROCEDURE verkauf_abwickeln (
     IN p_menge INT
 )
 BEGIN
-    -- Variable to store current stock level
-    DECLARE bestand INT;
+    DECLARE v_preis DECIMAL(10,2);
+    DECLARE v_gesamt_summe DECIMAL(10,2);
+    DECLARE v_lager_bestand INT;
+    DECLARE v_kunden_geld DECIMAL(10,2);
 
-    -- Start the transaction to ensure atomicity
     START TRANSACTION;
 
-    -- Retrieve the current stock for the specified item
-    SELECT lagerbestand INTO bestand
-    FROM artikel
-    WHERE artikel_id = p_artikel_id;
+    -- 1. Check price and stock level
+    SELECT preis, lagerbestand INTO v_preis, v_lager_bestand
+    FROM artikel WHERE artikel_id = p_artikel_id;
 
-    -- Validation logic: Check if enough stock is available
-    IF bestand < p_menge THEN
-        -- Rollback changes if stock is insufficient
+    -- 2. Check customer's bank balance
+    SELECT kontostand INTO v_kunden_geld
+    FROM kunden_konten WHERE kunden_id = p_kunden_id;
+
+    SET v_gesamt_summe = v_preis * p_menge;
+
+    -- Logic check
+    IF v_lager_bestand < p_menge THEN
         ROLLBACK;
-        SELECT 'Nicht genügend Lagerbestand für diesen Artikel.' AS fehlermeldung;
+        SELECT 'Unzureichender Vorrat.' AS erfolgsmeldung;
+    ELSEIF v_kunden_geld < v_gesamt_summe THEN
+        ROLLBACK;
+        SELECT 'Kundenkontostand zu niedrig.' AS erfolgsmeldung;
     ELSE
-        -- Update the stock level by subtracting the sold quantity
-        UPDATE artikel
-        SET lagerbestand = lagerbestand - p_menge
+        -- ACTION A: Update Stock
+        UPDATE artikel SET lagerbestand = lagerbestand - p_menge
         WHERE artikel_id = p_artikel_id;
 
-        -- Insert the sales record into the 'verkauf' table
+        -- ACTION B: Deduct money from Customer Bank Account
+        UPDATE kunden_konten SET kontostand = kontostand - v_gesamt_summe
+        WHERE kunden_id = p_kunden_id;
+
+        -- ACTION C: Add money to Shop Cash Register
+        UPDATE shop_kasse SET kontostand = kontostand + v_gesamt_summe
+        WHERE kasse_id = 1;
+
+        -- ACTION D: Log the sale
         INSERT INTO verkauf (kunden_id, lieferanten_id, artikel_id, menge, datum)
         VALUES (p_kunden_id, p_lieferanten_id, p_artikel_id, p_menge, CURDATE());
 
-        -- Provide success notification to the user
-        SELECT 'Verkauf erfolgreich abgeschlossen.' AS erfolgsmeldung;
-
-        -- Commit all changes to the database
+        SELECT 'Bestand aktualisiert und Zahlung überwiesen.' AS erfolgsmeldung;
         COMMIT;
     END IF;
 END;
@@ -107,7 +134,7 @@ BEGIN
     ELSE
         -- If no rows were updated, the ID was wrong
         ROLLBACK;
-        SELECT 'Artikel-ID nicht gefunden. Keine Änderungen vorgenommen.' AS fehlermeldung;
+        SELECT 'Artikel-ID nicht gefunden. Keine Änderungen vorgenommen.' AS erfolgsmeldung;
     END IF;
 END;
 
@@ -132,3 +159,11 @@ VALUES (1, 1, 1, 2, '2026-04-20'),
        (1, 1, 3, 1, '2026-04-20'),
        (2, 1, 2, 5, '2026-04-21'),
        (3, 2, 4, 1, '2026-04-22');
+
+INSERT INTO kunden_konten (kunden_id, kontostand)
+VALUES (1, 5000.00),
+       (2, 250.50),
+       (3, 1200.75);
+
+INSERT INTO shop_kasse (kasse_id, kontostand) VALUES
+    (1, 25000.00);
