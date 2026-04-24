@@ -86,6 +86,31 @@ BEGIN
     END IF;
 END;
 
+CREATE PROCEDURE update_price (
+    IN p_artikel_id INT,
+    IN p_price DECIMAL(10, 2)
+)
+BEGIN
+    -- Start the transaction
+    START TRANSACTION;
+
+    -- 1. Update the price for the given article ID
+    UPDATE artikel
+    SET preis = p_price
+    WHERE artikel_id = p_artikel_id;
+
+    -- 2. Check if the article actually existed
+    -- ROW_COUNT() returns the number of affected rows
+    IF ROW_COUNT() > 0 THEN
+        SELECT 'Preis erfolgreich aktualisiert.' AS erfolgsmeldung;
+        COMMIT;
+    ELSE
+        -- If no rows were updated, the ID was wrong
+        ROLLBACK;
+        SELECT 'Artikel-ID nicht gefunden. Keine Änderungen vorgenommen.' AS fehlermeldung;
+    END IF;
+END;
+
 INSERT INTO kunden (vorname, nachname, straße, hausnummer, postleitzahl, stadt, telefonnummer, email)
 VALUES ('Dmitry', 'Mage', 'Levelstrasse', '10', '10115', 'Berlin', '01761234567', 'dmitry.mage@mail.de'),
        ('Hans', 'Müller', 'Reeperbahn', '22', '20359', 'Hamburg', '0409876543', 'h.mueller@web.de'),

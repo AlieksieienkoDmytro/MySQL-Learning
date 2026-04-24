@@ -123,7 +123,7 @@ START TRANSACTION;
 
 -- 1. Update the price of the article (e.g., Cohiba Siglo II)
 UPDATE artikel
-SET preis = 26.90
+SET preis = 16.90
 WHERE artikel_id = 1;
 
 -- 2. Optional: In a real system, you might update a price_history table here.
@@ -131,6 +131,9 @@ WHERE artikel_id = 1;
 SELECT 'Hauptpreis erfolgreich aktualisiert' AS erfolgsmeldung;
 
 COMMIT;
+-- Alternatively, we can use the stored procedure for a more robust implementation:
+-- Updating the price of article ID 1 to 26.90 Euro
+CALL update_price(1, 26.90);
 
 
 -- Speed up searching for customers by their last name
