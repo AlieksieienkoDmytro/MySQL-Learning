@@ -35,7 +35,6 @@ CREATE TABLE IF NOT EXISTS artikel (
 CREATE TABLE IF NOT EXISTS verkauf (
     verkauf_id INT AUTO_INCREMENT PRIMARY KEY,
     kunden_id INT,
-    menge INT,
     gesamtpreis DECIMAL(10, 2),
     datum DATE,
     FOREIGN KEY (kunden_id) REFERENCES kunden(kunden_id)
@@ -44,6 +43,7 @@ CREATE TABLE IF NOT EXISTS verkauf (
 CREATE TABLE IF NOT EXISTS verkauf_artikel (
     verkauf_id INT,
     artikel_id INT,
+    menge INT,
     FOREIGN KEY (verkauf_id) REFERENCES verkauf(verkauf_id),
     FOREIGN KEY (artikel_id) REFERENCES artikel(artikel_id)
 );
