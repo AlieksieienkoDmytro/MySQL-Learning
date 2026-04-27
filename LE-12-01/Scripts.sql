@@ -15,28 +15,47 @@ WHERE bezeichnung = 'Cohiba Siglo II';
 -- 5. Display all sales for a specific customer
 SELECT
     verkauf.verkauf_id,
-    verkauf.datum,
-    verkauf_positionen.artikel_id,
-    verkauf_positionen.menge,
-    verkauf_positionen.einzelpreis,
-    (verkauf_positionen.menge * verkauf_positionen.einzelpreis) AS gesamtumsatz
+    kunden.vorname,
+    kunden.nachname,
+    artikel.bezeichnung,
+    verkauf.menge,
+    artikel.preis,
+    verkauf.gesamtpreis,
+    verkauf.datum
 FROM verkauf
-         JOIN verkauf_positionen ON verkauf.verkauf_id = verkauf_positionen.verkauf_id
+    JOIN verkauf_artikel ON verkauf.verkauf_id = verkauf_artikel.verkauf_id
+    JOIN artikel ON verkauf_artikel.artikel_id = artikel.artikel_id
+    JOIN kunden ON verkauf.kunden_id = kunden.kunden_id
 WHERE verkauf.kunden_id = 1;
 
 -- 6. Display all sales for a specific supplier
-SELECT DISTINCT *
+SELECT
+    verkauf.verkauf_id,
+    kunden.vorname,
+    kunden.nachname,
+    lieferanten.name AS lieferant,
+    artikel.bezeichnung,
+    verkauf.menge,
+    artikel.preis,
+    verkauf.gesamtpreis,
+    verkauf.datum
 FROM verkauf
-         JOIN verkauf_positionen ON verkauf.verkauf_id = verkauf_positionen.verkauf_id
-WHERE verkauf_positionen.lieferanten_id = 1;
+    JOIN verkauf_artikel ON verkauf.verkauf_id = verkauf_artikel.verkauf_id
+    JOIN artikel ON verkauf_artikel.artikel_id = artikel.artikel_id
+    JOIN lieferanten_artikel ON artikel.artikel_id = lieferanten_artikel.artikel_id
+    JOIN lieferanten ON lieferanten_artikel.lieferanten_id = lieferanten.lieferanten_id
+    JOIN kunden ON verkauf.kunden_id = kunden.kunden_id
+WHERE lieferanten.lieferanten_id = 1;
 
 -- 7. Display all products cheaper than a certain value
 SELECT * FROM artikel
 WHERE preis < 10.00;
 
 -- 8. Calculate the total revenue of the shop
-SELECT SUM(verkauf_positionen.menge * verkauf_positionen.einzelpreis) AS gesamtumsatz
-FROM verkauf_positionen;
+SELECT SUM(verkauf.menge * artikel.preis) AS gesamtumsatz
+FROM verkauf
+    JOIN verkauf_artikel ON verkauf.verkauf_id = verkauf_artikel.verkauf_id
+    JOIN artikel ON verkauf_artikel.artikel_id = artikel.artikel_id;
 
 -- 9. Update the stock for a specific item
 UPDATE artikel
@@ -45,7 +64,7 @@ WHERE artikel_id = 2;
 
 -- 10. Delete a customer and all their related sales
 -- Delete positions linked to the customer's sales
-DELETE FROM verkauf_positionen
+DELETE FROM verkauf_artikel
 WHERE verkauf_id IN (SELECT verkauf_id
                      FROM verkauf
                      WHERE kunden_id = 3);
@@ -53,16 +72,16 @@ WHERE verkauf_id IN (SELECT verkauf_id
 -- Delete the sales headers
 DELETE FROM verkauf WHERE kunden_id = 3;
 
--- Delete the customer's bank account
-DELETE FROM kunden_konten WHERE kunden_id = 3;
-
 -- Finally, delete the customer
 DELETE FROM kunden WHERE kunden_id = 3;
 
 
 -- 11. Delete a product and all its related sales positions
 -- Remove the product from all transaction records first
-DELETE FROM verkauf_positionen WHERE artikel_id = 5;
+DELETE FROM verkauf_artikel WHERE artikel_id = 5;
+
+-- Remove the product from the supplier-product relationship
+DELETE FROM lieferanten_artikel WHERE artikel_id = 5;
 
 -- Now the product can be safely removed
 DELETE FROM artikel WHERE artikel_id = 5;
@@ -72,24 +91,26 @@ SELECT
     verkauf.verkauf_id,
     kunden.vorname,
     kunden.nachname,
-    lieferanten.name,
+    lieferanten.name AS lieferant,
     artikel.bezeichnung,
-    verkauf_positionen.menge,
-    verkauf_positionen.einzelpreis,
+    verkauf.menge,
+    artikel.preis,
+    verkauf.gesamtpreis,
     verkauf.datum
 FROM verkauf
          JOIN kunden ON verkauf.kunden_id = kunden.kunden_id
-         JOIN verkauf_positionen ON verkauf.verkauf_id = verkauf_positionen.verkauf_id
-         JOIN lieferanten ON verkauf_positionen.lieferanten_id = lieferanten.lieferanten_id
-         JOIN artikel ON verkauf_positionen.artikel_id = artikel.artikel_id;
+         JOIN verkauf_artikel ON verkauf.verkauf_id = verkauf_artikel.verkauf_id
+         JOIN artikel ON verkauf_artikel.artikel_id = artikel.artikel_id
+         JOIN lieferanten_artikel ON artikel.artikel_id = lieferanten_artikel.artikel_id
+         JOIN lieferanten ON lieferanten_artikel.lieferanten_id = lieferanten.lieferanten_id;
 
 -- 13. Display all products and their suppliers
 SELECT DISTINCT
     artikel.bezeichnung,
-    lieferanten.name
+    lieferanten.name AS lieferant
 FROM artikel
-         JOIN verkauf_positionen ON artikel.artikel_id = verkauf_positionen.artikel_id
-         JOIN lieferanten ON verkauf_positionen.lieferanten_id = lieferanten.lieferanten_id;
+         JOIN lieferanten_artikel ON artikel.artikel_id = lieferanten_artikel.artikel_id
+         JOIN lieferanten ON lieferanten_artikel.lieferanten_id = lieferanten.lieferanten_id;
 
 
 -- Call view to check customer turnover
@@ -100,12 +121,12 @@ SELECT * FROM view_customer_turnover;
 
 -- Case 1: Testing Transaction 1 (Successful sale)
 -- Dmitry buys 2 Cohiba cigars. Both tables will be updated.
-CALL verkauf_abwickeln(1, 1, 1, 2);
+CALL verkauf_abwickeln(1, 1, 2);
 
 -- Case 2: Testing Transaction 1 (Rollback scenario)
 -- Hans tries to buy 500 packs of Lucky Strike (only 200 in stock).
 -- The procedure will ROLLBACK, and no data will be changed.
-CALL verkauf_abwickeln(2, 1, 2, 500);
+CALL verkauf_abwickeln(2, 1, 500);
 
 
 
@@ -117,13 +138,13 @@ INSERT INTO kunden (vorname, nachname, straße, hausnummer, postleitzahl, stadt,
 VALUES ('Viktor', 'Rauch', 'Tabakweg', '7', '10117', 'Berlin', '0151998877', 'v.rauch@online.de');
 
 -- 2. Insert the sale header (uses Customer ID from step 1)
-INSERT INTO verkauf (kunden_id, datum)
-VALUES (LAST_INSERT_ID(), CURDATE());
+INSERT INTO verkauf (kunden_id, menge, gesamtpreis, datum)
+VALUES (LAST_INSERT_ID(), 2, 49,CURDATE());
 
 -- 3. Insert the sale position (uses Sale ID from step 2)
 -- IMPORTANT: Now LAST_INSERT_ID() points to the ID from the 'verkauf' table
-INSERT INTO verkauf_positionen (verkauf_id, artikel_id, lieferanten_id, menge, einzelpreis)
-VALUES (LAST_INSERT_ID(), 1, 2, 1, 24.50);
+INSERT INTO verkauf_artikel (verkauf_id, artikel_id)
+VALUES (LAST_INSERT_ID(), 1);
 
 COMMIT;
 

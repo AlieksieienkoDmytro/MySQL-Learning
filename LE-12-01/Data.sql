@@ -14,21 +14,19 @@ VALUES ('Cohiba Siglo II', 'Premium Zigarre aus Kuba', 24.50, 50),
        ('Pfeifentabak Vanille', 'Mild und aromatisch, 50g', 12.90, 30),
        ('Drehtabak Javaanse', 'Halbschwarzer Tabak, 30g', 6.50, 100);
 
-INSERT INTO kunden_konten (kunden_id, kontostand)
-VALUES (1, 5000.00),
-       (2, 250.50),
-       (3, 1200.75);
+INSERT INTO lieferanten_artikel (artikel_id, lieferanten_id)
+VALUES (1, 2),
+       (2, 1),
+       (3, 1),
+       (4, 1),
+       (5, 1);
 
-INSERT INTO shop_kasse (kasse_id, kontostand)
-VALUES (1, 25000.00);
+INSERT INTO verkauf (kunden_id, menge, gesamtpreis, datum)
+VALUES (1, 2, 49.00, '2026-04-20'),
+       (2, 2, 16.40, '2026-04-21'),
+       (3, 1, 35.00, '2026-04-22');
 
-INSERT INTO verkauf (kunden_id, datum)
-VALUES (1, '2026-04-20'),
-       (2, '2026-04-21'),
-       (3, '2026-04-22');
-
-INSERT INTO verkauf_positionen (verkauf_id, artikel_id, lieferanten_id, menge, einzelpreis)
-VALUES (1, 1, 1, 2, 24.50),
-       (1, 3, 1, 1, 35.00),
-       (2, 2, 1, 5, 8.20),
-       (3, 4, 2, 1, 12.90);
+INSERT INTO verkauf_artikel (verkauf_id, artikel_id)
+VALUES (1, 1),
+       (2, 2),
+       (3, 3);
