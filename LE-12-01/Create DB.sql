@@ -169,7 +169,9 @@ END $$
 
 
 -- Created a View to easily monitor customer loyalty and total revenue per person.
-CREATE OR REPLACE VIEW view_customer_turnover AS
+DROP VIEW IF EXISTS view_customer_turnover;
+
+CREATE VIEW view_customer_turnover AS
 SELECT
     kunden.vorname,
     kunden.nachname,
