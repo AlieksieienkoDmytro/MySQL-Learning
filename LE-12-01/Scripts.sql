@@ -18,7 +18,7 @@ SELECT
     kunden.vorname,
     kunden.nachname,
     artikel.bezeichnung,
-    verkauf.menge,
+    verkauf_artikel.menge,
     artikel.preis,
     verkauf.gesamtpreis,
     verkauf.datum
@@ -35,7 +35,7 @@ SELECT
     kunden.nachname,
     lieferanten.name AS lieferant,
     artikel.bezeichnung,
-    verkauf.menge,
+    verkauf_artikel.menge,
     artikel.preis,
     verkauf.gesamtpreis,
     verkauf.datum
@@ -52,7 +52,7 @@ SELECT * FROM artikel
 WHERE preis < 10.00;
 
 -- 8. Calculate the total revenue of the shop
-SELECT SUM(verkauf.menge * artikel.preis) AS gesamtumsatz
+SELECT SUM(verkauf_artikel.menge * artikel.preis) AS gesamtumsatz
 FROM verkauf
     JOIN verkauf_artikel ON verkauf.verkauf_id = verkauf_artikel.verkauf_id
     JOIN artikel ON verkauf_artikel.artikel_id = artikel.artikel_id;
@@ -93,7 +93,7 @@ SELECT
     kunden.nachname,
     lieferanten.name AS lieferant,
     artikel.bezeichnung,
-    verkauf.menge,
+    verkauf_artikel.menge,
     artikel.preis,
     verkauf.gesamtpreis,
     verkauf.datum
@@ -116,53 +116,5 @@ FROM artikel
 -- Call view to check customer turnover
 SELECT * FROM view_customer_turnover;
 
-
--- TRANSACTION 1
-
--- Case 1: Testing Transaction 1 (Successful sale)
--- Dmitry buys 2 Cohiba cigars. Both tables will be updated.
-CALL verkauf_abwickeln(1, 1, 2);
-
--- Case 2: Testing Transaction 1 (Rollback scenario)
--- Hans tries to buy 500 packs of Lucky Strike (only 200 in stock).
--- The procedure will ROLLBACK, and no data will be changed.
-CALL verkauf_abwickeln(2, 1, 500);
-
-
-
-/* TRANSACTION 2 (Manual Transaction) - Direct IDs */
-START TRANSACTION;
-
--- 1. Insert the new customer
-INSERT INTO kunden (vorname, nachname, straße, hausnummer, postleitzahl, stadt, telefonnummer, email)
-VALUES ('Viktor', 'Rauch', 'Tabakweg', '7', '10117', 'Berlin', '0151998877', 'v.rauch@online.de');
-
--- 2. Insert the sale header (uses Customer ID from step 1)
-INSERT INTO verkauf (kunden_id, menge, gesamtpreis, datum)
-VALUES (LAST_INSERT_ID(), 2, 49,CURDATE());
-
--- 3. Insert the sale position (uses Sale ID from step 2)
--- IMPORTANT: Now LAST_INSERT_ID() points to the ID from the 'verkauf' table
-INSERT INTO verkauf_artikel (verkauf_id, artikel_id)
-VALUES (LAST_INSERT_ID(), 1);
-
-COMMIT;
-
-/* TRANSACTION 3 (Price Update):
-   This transaction updates the price of a specific article and confirms the update.
-*/
-START TRANSACTION;
-
--- 1. Update the price of the article (e.g., Cohiba Siglo II)
-UPDATE artikel
-SET preis = 16.90
-WHERE artikel_id = 1;
-
--- 2. Optional: In a real system, you might update a price_history table here.
--- For this task, we confirm the price update for future 'verkauf' calculations.
-SELECT 'Hauptpreis erfolgreich aktualisiert' AS erfolgsmeldung;
-
-COMMIT;
--- Alternatively, we can use the stored procedure for a more robust implementation:
--- Updating the price of article ID 1 to 26.90 Euro
-CALL update_price(1, 26.90);
+-- Check sales details view
+SELECT * FROM view_verkauf_details;

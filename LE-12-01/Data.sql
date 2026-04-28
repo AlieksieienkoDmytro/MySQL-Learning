@@ -21,12 +21,12 @@ VALUES (1, 2),
        (4, 1),
        (5, 1);
 
-INSERT INTO verkauf (kunden_id, menge, gesamtpreis, datum)
-VALUES (1, 2, 49.00, '2026-04-20'),
-       (2, 2, 16.40, '2026-04-21'),
-       (3, 1, 35.00, '2026-04-22');
+INSERT INTO verkauf (kunden_id, gesamtpreis, datum)
+VALUES (1, 49.00, '2026-04-20'),
+       (2, 16.40, '2026-04-21'),
+       (3, 35.00, '2026-04-22');
 
-INSERT INTO verkauf_artikel (verkauf_id, artikel_id)
-VALUES (1, 1),
-       (2, 2),
-       (3, 3);
+INSERT INTO verkauf_artikel (verkauf_id, artikel_id, menge)
+VALUES (1, 1, 2),
+       (2, 2, 2),
+       (3, 3, 1);
