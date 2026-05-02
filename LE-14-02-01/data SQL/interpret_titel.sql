@@ -1,0 +1,13 @@
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 1);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 2);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 3);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 4);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 5);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 6);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (2, 7);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (7, 8);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (4, 9);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (8, 10);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 11);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 12);
+INSERT INTO cd_database.interpret_titel (interpret_id, titel_id) VALUES (1, 13);

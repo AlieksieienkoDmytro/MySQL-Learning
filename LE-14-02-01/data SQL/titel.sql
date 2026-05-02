@@ -1,0 +1,13 @@
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (1, 'Delilah (pull me out of this)', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (2, 'Jungle', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (3, 'Baby again..', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (4, 'Turn On The Lights again..', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (5, 'Stayinit', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (6, 'Leavemealone', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (7, 'Rumble', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (8, 'Baddadan', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (9, 'Rumble (Overmono Remix)', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (10, 'Flight fm', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (11, 'Mike (desert island statue)', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (12, 'Strong', 5);
+INSERT INTO cd_database.titel (titel_id, titel, beurteilung) VALUES (13, 'Places to Be', 4);

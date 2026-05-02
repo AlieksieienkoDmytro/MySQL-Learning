@@ -1,0 +1,16 @@
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (1, 1, 1);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (1, 2, 2);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (2, 7, 1);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (3, 1, 3);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (3, 3, 1);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (3, 4, 2);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (3, 8, 4);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (4, 1, 1);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (4, 2, 2);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (4, 5, 6);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (4, 6, 4);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (4, 7, 3);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (4, 10, 5);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (5, 11, 3);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (5, 12, 2);
+INSERT INTO cd_database.cd_titel (cd_id, titel_id, titel_nr) VALUES (5, 13, 1);
