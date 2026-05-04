@@ -23,7 +23,7 @@ FROM spieler s
          JOIN trainer_teams tt ON t.team_id = tt.team_id
          JOIN trainer tr ON tt.trainer_id = tr.trainer_id;
 
--- Query 4: Update all trainer salaries by 25% and document it
+-- Query 4: Create table for Salary Increase Report
 CREATE TABLE IF NOT EXISTS report_salary_increase AS
 SELECT vorname, nachname, gehalt AS neues_gehalt
 FROM trainer;
