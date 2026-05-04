@@ -1,32 +1,32 @@
 CREATE DATABASE IF NOT EXISTS sportverein;
 USE sportverein;
 
-CREATE TABLE teams (
+CREATE TABLE IF NOT EXISTS teams (
     team_id INT AUTO_INCREMENT PRIMARY KEY,
     teamname VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE spieler (
+CREATE TABLE IF NOT EXISTS spieler (
     spieler_id INT AUTO_INCREMENT PRIMARY KEY,
     vorname VARCHAR(100) NOT NULL,
     nachname VARCHAR(100) NOT NULL,
     geburtsdatum DATE
 );
 
-CREATE TABLE trainer (
+CREATE TABLE IF NOT EXISTS trainer (
     trainer_id INT AUTO_INCREMENT PRIMARY KEY,
     vorname VARCHAR(100) NOT NULL,
     nachname VARCHAR(100) NOT NULL,
     gehalt DECIMAL(10, 2)
 );
 
-CREATE TABLE ausbildungen (
+CREATE TABLE IF NOT EXISTS ausbildungen (
     ausbildung_id INT AUTO_INCREMENT PRIMARY KEY,
     bezeichnung VARCHAR(255),
     datum DATE
 );
 
-CREATE TABLE spieler_teams (
+CREATE TABLE IF NOT EXISTS spieler_teams (
     spieler_id INT,
     team_id INT,
     PRIMARY KEY (spieler_id, team_id),
@@ -34,7 +34,7 @@ CREATE TABLE spieler_teams (
     FOREIGN KEY (team_id) REFERENCES Teams(team_id)
 );
 
-CREATE TABLE trainer_teams (
+CREATE TABLE IF NOT EXISTS trainer_teams (
     trainer_id INT,
     team_id INT,
     PRIMARY KEY (trainer_id, team_id),
@@ -42,7 +42,7 @@ CREATE TABLE trainer_teams (
     FOREIGN KEY (team_id) REFERENCES Teams(team_id)
 );
 
-CREATE TABLE trainer_ausbildungen (
+CREATE TABLE IF NOT EXISTS trainer_ausbildungen (
     trainer_id INT,
     ausbildung_id INT,
     PRIMARY KEY (trainer_id, ausbildung_id),
